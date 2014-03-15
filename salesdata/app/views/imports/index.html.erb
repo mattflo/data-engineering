@@ -10,8 +10,18 @@
   </thead>
 
   <tbody>
+    <tr>
+      <th>Id</th>
+      <th>Created At</th>
+      <th>File Name</th>
+      <th></th>
+      <th></th>
+    </tr>
     <% @imports.each do |import| %>
       <tr>
+        <td><%= import.id %></td>
+        <td><%= import.created_at %></td>
+        <td><%= import.file_name %></td>
         <td><%= link_to 'Show', import %></td>
         <td><%= link_to 'Destroy', import, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
