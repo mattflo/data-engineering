@@ -1,5 +1,6 @@
 <%= form_for(@import) do |f| %>
-  <% if @import.errors.any? %>
+  <%= f.file_field :file %>
+<% if @import.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@import.errors.count, "error") %> prohibited this import from being saved:</h2>
 
@@ -12,6 +13,6 @@
   <% end %>
 
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit "Import" %>
   </div>
 <% end %>
