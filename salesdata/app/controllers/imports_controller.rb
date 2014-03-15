@@ -29,7 +29,48 @@ class ImportsController < ApplicationController
       file.write(uploaded_io.read)
     end
     @import = Import.create :file_name => uploaded_io.original_filename
+
+    lines = File.readlines(Rails.root.join('public', 'uploads', uploaded_io.original_filename))
+    lines.shift #remove header line
+    lines.each do |l|
+      order = build_order l
+      order.import = @import
+      order.save
+      puts "order total: #{order.total}"
+    end
+
+    puts "import total: #{@import.orders.map{|o| o.total}.inject(:+)}"
+
     redirect_to @import, notice: 'Import was successfully created.' 
+  end
+
+  def build_order line
+    order = Order.new
+
+    fields = line.split("\t")
+    # for debugging
+    # puts 
+    # puts "new order"
+    # puts "---------"
+    # puts "purchaser name #{fields[0]}"
+    # puts "item name #{fields[1]}"
+    # puts "item price #{fields[2]}"
+    # puts "item qty #{fields[3]}"
+    # puts "merchant address #{fields[4]}"
+    # puts "merchant name #{fields[5]}"
+
+    p = Purchaser.find_or_create_by(name: fields[0]) {|p| p.name = fields[0]}
+    order.purchaser = p
+
+    i = Item.find_by_description(fields[1]) || Item.create(:description => fields[1], :price => fields[2])
+    order.item = i
+
+    m = Merchant.find_by_name(fields[5]) || Merchant.create(:name => fields[5], :address => fields[4])
+    i.merchant = m
+    i.save
+
+    order.quantity = fields[3]
+    order
   end
 
   # PATCH/PUT /imports/1
